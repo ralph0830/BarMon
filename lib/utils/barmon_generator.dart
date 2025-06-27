@@ -1,7 +1,7 @@
-// 바코디언 생성 유틸리티 (시드/능력치/속성/희귀도 등)
+// 바몬 생성 유틸리티 (시드/능력치/속성/희귀도 등)
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
-import '../models/barcodian.dart';
+import '../models/barmon.dart';
 
 // 비즈니스 바코드 예시 패턴 (prefix, DB 등으로 확장 가능)
 bool isBusinessBarcode(String barcode) {
@@ -21,7 +21,7 @@ String generateSeed({
   return hash; // 64자리 16진수
 }
 
-Barcodian generateBarcodian({
+BarMon generateBarMon({
   required String barcode,
   required String accountId,
   bool isBusiness = false,
@@ -40,14 +40,14 @@ Barcodian generateBarcodian({
   final speciesList = ['씨앗', '도마뱀', '거북', '벌레', '용', '고양이', '늑대', '로봇'];
   final species = speciesList[speciesIdx];
   // 속성 결정 (2개)
-  final typeIdx1 = hex(seed.substring(2, 4)) % BarcodianType.values.length;
-  final typeIdx2 = hex(seed.substring(4, 6)) % BarcodianType.values.length;
+  final typeIdx1 = hex(seed.substring(2, 4)) % BarMonType.values.length;
+  final typeIdx2 = hex(seed.substring(4, 6)) % BarMonType.values.length;
   final types = typeIdx1 == typeIdx2
-      ? [BarcodianType.values[typeIdx1]]
-      : [BarcodianType.values[typeIdx1], BarcodianType.values[typeIdx2]];
+      ? [BarMonType.values[typeIdx1]]
+      : [BarMonType.values[typeIdx1], BarMonType.values[typeIdx2]];
   // 희귀도
-  final rarityIdx = hex(seed.substring(6, 8)) % BarcodianRarity.values.length;
-  final rarity = BarcodianRarity.values[rarityIdx];
+  final rarityIdx = hex(seed.substring(6, 8)) % BarMonRarity.values.length;
+  final rarity = BarMonRarity.values[rarityIdx];
   // 능력치
   final attack = 30 + hex(seed.substring(8, 10)) % 71; // 30~100
   final defense = 30 + hex(seed.substring(10, 12)) % 71;
@@ -61,9 +61,10 @@ Barcodian generateBarcodian({
   final id = seed.substring(0, 12);
   // 이름(임시: 종족+속성)
   final name = '${species}_${types.map((t) => t.displayName).join('_')}';
-  return Barcodian(
+  return BarMon(
     id: id,
     name: name,
+    engName: name, // 임시: 영문명은 name과 동일하게
     types: types,
     imageUrl: imageUrl,
     level: level,
@@ -72,7 +73,14 @@ Barcodian generateBarcodian({
     defense: defense,
     hp: hp,
     speed: speed,
+    agility: 50, // 임시값
+    luck: 50,    // 임시값
     species: species,
     rarity: rarity,
+    nature: '밸런스형', // 임시값
+    trait: '기본',     // 임시값
+    potential: 50,    // 임시값
+    starGrade: 1,     // 임시값
+    attribute: '무속성', // TODO: seed에서 속성 추출 로직 구현
   );
 }

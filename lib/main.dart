@@ -1,25 +1,25 @@
-// Flutter 진입점: 내 바코디언 리스트 → 상세 페이지 네비게이션
+// Flutter 진입점: 내 바몬 리스트 → 상세 페이지 네비게이션
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'screens/barcodian_list_page.dart';
+import 'screens/barmon_list_page.dart';
 
 void main() {
-  runApp(const ProviderScope(child: BarcodianApp()));
+  runApp(const ProviderScope(child: BarmonApp()));
 }
 
-class BarcodianApp extends StatelessWidget {
-  const BarcodianApp({super.key});
+class BarmonApp extends StatelessWidget {
+  const BarmonApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: '바코디언',
+      title: '바몬',
       theme: ThemeData(
         fontFamily: 'Pretendard',
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
         useMaterial3: true,
       ),
-      home: const BarcodianListPage(),
+      home: const BarmonListPage(),
       debugShowCheckedModeBanner: false,
     );
   }

@@ -1,7 +1,6 @@
 // 바몬 상세 페이지r
 import 'package:flutter/material.dart';
 import '../models/barmon.dart';
-import '../widgets/barmon_badge.dart';
 
 // 속성별 대표 색상 매핑 함수
 Color getTypeColor(BarMonType type) {
@@ -54,6 +53,7 @@ class BarMonDetailPage extends StatefulWidget {
 class _BarMonDetailPageState extends State<BarMonDetailPage> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _glowAnim;
+  bool _hideInfoOverlay = false;
 
   @override
   void initState() {
@@ -198,38 +198,44 @@ class _BarMonDetailPageState extends State<BarMonDetailPage> with SingleTickerPr
                       // 고정 크기 1:1 이미지 + 오버레이
                       Stack(
                         children: [
-                          Container(
-                            width: 320,
-                            height: 320,
-                            alignment: Alignment.center,
-                            child: Image.asset(
-                              barMon.imageUrl,
+                          GestureDetector(
+                            onTapDown: (_) => setState(() => _hideInfoOverlay = true),
+                            onTapUp: (_) => setState(() => _hideInfoOverlay = false),
+                            onTapCancel: () => setState(() => _hideInfoOverlay = false),
+                            child: Container(
                               width: 320,
                               height: 320,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          // 잠재력, 성격, 성향 (이미지 하단 중앙 오버레이)
-                          Positioned(
-                            left: 0,
-                            right: 0,
-                            bottom: 0,
-                            child: Center(
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    _InfoChip(label: '잠재력', value: barMon.potential.toString()),
-                                    const SizedBox(width: 8),
-                                    _InfoChip(label: '성격', value: barMon.nature),
-                                    const SizedBox(width: 8),
-                                    _InfoChip(label: '성향', value: barMon.trait),
-                                  ],
-                                ),
+                              alignment: Alignment.center,
+                              child: Image.asset(
+                                barMon.imageUrl,
+                                width: 320,
+                                height: 320,
+                                fit: BoxFit.cover,
                               ),
                             ),
                           ),
+                          // 잠재력, 성격, 성향 (이미지 하단 중앙 오버레이)
+                          if (!_hideInfoOverlay)
+                            Positioned(
+                              left: 0,
+                              right: 0,
+                              bottom: 0,
+                              child: Center(
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      _InfoChip(label: '잠재력', value: barMon.potential.toString()),
+                                      const SizedBox(width: 8),
+                                      _InfoChip(label: '성격', value: barMon.nature),
+                                      const SizedBox(width: 8),
+                                      _InfoChip(label: '성향', value: barMon.trait),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
                         ],
                       ),
                       // 이미지와 능력치 표 사이 여백 최소화

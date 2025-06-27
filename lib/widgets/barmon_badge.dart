@@ -1,46 +1,46 @@
-// 바코디언 속성 뱃지 위젯
+// 바몬 속성 뱃지 위젯
 import 'package:flutter/material.dart';
-import '../models/barcodian.dart';
+import '../models/barmon.dart';
 
-class BarcodianBadge extends StatelessWidget {
-  final BarcodianType type;
-  const BarcodianBadge({super.key, required this.type});
+class BarMonBadge extends StatelessWidget {
+  final BarMonType barMonType;
+  const BarMonBadge({super.key, required this.barMonType});
 
   Color get typeColor {
-    switch (type) {
-      case BarcodianType.grass:
+    switch (barMonType) {
+      case BarMonType.grass:
         return const Color(0xFF78C850);
-      case BarcodianType.poison:
+      case BarMonType.poison:
         return const Color(0xFFA040A0);
-      case BarcodianType.fire:
+      case BarMonType.fire:
         return const Color(0xFFF08030);
-      case BarcodianType.water:
+      case BarMonType.water:
         return const Color(0xFF6890F0);
-      case BarcodianType.electric:
+      case BarMonType.electric:
         return const Color(0xFFF8D030);
-      case BarcodianType.ground:
+      case BarMonType.ground:
         return const Color(0xFFE0C068);
-      case BarcodianType.rock:
+      case BarMonType.rock:
         return const Color(0xFFB8A038);
-      case BarcodianType.psychic:
+      case BarMonType.psychic:
         return const Color(0xFFF85888);
-      case BarcodianType.ice:
+      case BarMonType.ice:
         return const Color(0xFF98D8D8);
-      case BarcodianType.bug:
+      case BarMonType.bug:
         return const Color(0xFFA8B820);
-      case BarcodianType.dragon:
+      case BarMonType.dragon:
         return const Color(0xFF7038F8);
-      case BarcodianType.dark:
+      case BarMonType.dark:
         return const Color(0xFF705848);
-      case BarcodianType.steel:
+      case BarMonType.steel:
         return const Color(0xFFB8B8D0);
-      case BarcodianType.fairy:
+      case BarMonType.fairy:
         return const Color(0xFFEE99AC);
-      case BarcodianType.normal:
+      case BarMonType.normal:
         return const Color(0xFFA8A878);
-      case BarcodianType.data:
+      case BarMonType.data:
         return Colors.blueGrey;
-      case BarcodianType.metal:
+      case BarMonType.metal:
         return Colors.grey;
     }
   }
@@ -56,7 +56,7 @@ class BarcodianBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
       ),
       child: Text(
-        type.displayName,
+        barMonType.displayName,
         style: TextStyle(
           color: typeColor,
           fontWeight: FontWeight.bold,

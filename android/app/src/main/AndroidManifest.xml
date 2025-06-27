@@ -1,4 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.CAMERA" />
     <application
         android:label="barcodian"
         android:name="${applicationName}"
@@ -30,8 +31,6 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
-        <!-- 카메라 권한: 바코드 스캔용 -->
-        <uses-permission android:name="android.permission.CAMERA" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and
