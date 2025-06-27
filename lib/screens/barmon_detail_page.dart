@@ -152,7 +152,7 @@ class _BarMonDetailPageState extends State<BarMonDetailPage> with SingleTickerPr
           animation: _glowAnim,
           builder: (context, child) {
             final borderColor = isSSR
-                ? typeColor.withOpacity(_glowAnim.value)
+                ? typeColor.withValues(alpha: _glowAnim.value)
                 : typeColor;
             return Container(
               decoration: BoxDecoration(
@@ -175,8 +175,8 @@ class _BarMonDetailPageState extends State<BarMonDetailPage> with SingleTickerPr
                 ),
               ),
               // 좌/우 세로 라인
-              Positioned(left: 0, top: 0, bottom: 0, child: _SideLine(color: typeColor)),
-              Positioned(right: 0, top: 0, bottom: 0, child: _SideLine(color: typeColor)),
+              Positioned(left: 0, top: 0, bottom: 0, child: _SideLine(color: typeColor, isSSR: isSSR)),
+              Positioned(right: 0, top: 0, bottom: 0, child: _SideLine(color: typeColor, isSSR: isSSR)),
               // 하단 배너/프레임
               Positioned(
                 bottom: 0, left: 0, right: 0,
@@ -283,135 +283,123 @@ class _BarMonDetailPageState extends State<BarMonDetailPage> with SingleTickerPr
   }
 }
 
-class _CardTopFrame extends StatelessWidget {
+// 메탈 그라데이션 유틸
+LinearGradient metalGradient({double highlightX = -1}) {
+  final stops = highlightX >= 0
+      ? [0.0, (highlightX - 0.1).clamp(0.0, 1.0), highlightX.clamp(0.0, 1.0), (highlightX + 0.1).clamp(0.0, 1.0), 1.0]
+      : [0.0, 0.5, 1.0];
+  final colors = highlightX >= 0
+      ? [
+          Color(0xFFB0BEC5),
+          Color(0xFFB0BEC5),
+          Colors.white.withOpacity(0.8),
+          Color(0xFFB0BEC5),
+          Color(0xFF757575),
+        ]
+      : [
+          Color(0xFFB0BEC5),
+          Colors.white.withOpacity(0.5),
+          Color(0xFF757575),
+        ];
+  return LinearGradient(
+    colors: colors,
+    stops: stops,
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+}
+
+// 상단바
+class _CardTopFrame extends StatefulWidget {
   final String name;
   final BarMonRarity rarity;
   final Color color;
   const _CardTopFrame({required this.name, required this.rarity, required this.color});
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 56,
-      decoration: BoxDecoration(
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-        gradient: LinearGradient(
-          colors: [color.withOpacity(0.8), color.withOpacity(0.4)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
-      child: Stack(
-        children: [
-          Positioned(
-            left: 20,
-            top: 12,
-            child: Text(
-              name,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 24,
-                letterSpacing: 1.2,
-                fontFamily: 'GmarketSansTTFBold',
-              ),
-            ),
-          ),
-          Positioned(
-            right: 20,
-            top: 12,
-            child: _RarityBadge(rarity: rarity),
-          ),
-          // 대각선 라인 효과
-          Positioned(
-            right: 0,
-            top: 0,
-            child: Transform.rotate(
-              angle: -0.2,
-              child: Container(
-                width: 80,
-                height: 12,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  State<_CardTopFrame> createState() => _CardTopFrameState();
 }
-
-class _SideLine extends StatelessWidget {
-  final Color color;
-  const _SideLine({required this.color});
+class _CardTopFrameState extends State<_CardTopFrame> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _highlightAnim;
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 2))..repeat();
+    _highlightAnim = Tween<double>(begin: 0.0, end: 1.0)
+      .animate(CurvedAnimation(
+        parent: _controller,
+        curve: const _HighlightPauseCurve(),
+      ));
+  }
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 8,
-      margin: const EdgeInsets.symmetric(vertical: 40),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [color.withOpacity(0.2), color],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
-        borderRadius: BorderRadius.circular(8),
-      ),
-    );
-  }
-}
-
-class _CardBottomBanner extends StatelessWidget {
-  final String species;
-  final int star;
-  final String description;
-  final Color color;
-  final String attribute;
-  const _CardBottomBanner({required this.species, required this.star, required this.description, required this.color, required this.attribute});
-  @override
-  Widget build(BuildContext context) {
-    return ClipPath(
-      clipper: _BannerClipper(),
-      child: Container(
-        height: 80,
-        color: color,
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(species, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
-                Row(
-                  children: List.generate(6, (i) => Icon(
-                    i < star ? Icons.star : Icons.star_border,
-                    color: Colors.amber,
-                    size: 18,
-                  )),
+    final isSSR = widget.rarity == BarMonRarity.legend;
+    return AnimatedBuilder(
+      animation: _highlightAnim,
+      builder: (context, child) {
+        return Container(
+          height: 56,
+          decoration: BoxDecoration(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+            gradient: isSSR
+                ? metalGradient(highlightX: _highlightAnim.value)
+                : LinearGradient(
+                    colors: [widget.color.withOpacity(0.8), widget.color.withOpacity(0.4)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+          ),
+          child: Stack(
+            children: [
+              Positioned(
+                left: 20,
+                top: 12,
+                child: Text(
+                  widget.name,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 24,
+                    letterSpacing: 1.2,
+                    fontFamily: 'GmarketSansTTFBold',
+                  ),
                 ),
-                const SizedBox(height: 2),
-                Text(description, style: const TextStyle(color: Colors.white, fontSize: 12)),
-              ],
-            ),
-            const Spacer(),
-            // 속성 이모지 표시
-            Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: Text(
-                getAttributeEmoji(attribute),
-                style: const TextStyle(fontSize: 32),
               ),
-            ),
-          ],
-        ),
-      ),
+              Positioned(
+                right: 20,
+                top: 12,
+                child: _RarityBadge(rarity: widget.rarity),
+              ),
+              // 대각선 라인 효과
+              Positioned(
+                right: 0,
+                top: 0,
+                child: Transform.rotate(
+                  angle: -0.2,
+                  child: Container(
+                    width: 80,
+                    height: 12,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
 
+// 하단바 배너용 클리퍼 (ClipPath에서 사용)
 class _BannerClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
@@ -426,6 +414,140 @@ class _BannerClipper extends CustomClipper<Path> {
   }
   @override
   bool shouldReclip(CustomClipper<Path> oldClipper) => false;
+}
+
+// 하단바
+class _CardBottomBanner extends StatefulWidget {
+  final String species;
+  final int star;
+  final String description;
+  final Color color;
+  final String attribute;
+  const _CardBottomBanner({required this.species, required this.star, required this.description, required this.color, required this.attribute});
+  @override
+  State<_CardBottomBanner> createState() => _CardBottomBannerState();
+}
+class _CardBottomBannerState extends State<_CardBottomBanner> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _highlightAnim;
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 2))..repeat();
+    _highlightAnim = Tween<double>(begin: 0.0, end: 1.0)
+      .animate(CurvedAnimation(
+        parent: _controller,
+        curve: const _HighlightPauseCurve(),
+      ));
+  }
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+  @override
+  Widget build(BuildContext context) {
+    final isSSR = widget.star == 5;
+    return AnimatedBuilder(
+      animation: _highlightAnim,
+      builder: (context, child) {
+        return ClipPath(
+          clipper: _BannerClipper(),
+          child: Container(
+            height: 80,
+            decoration: BoxDecoration(
+              gradient: isSSR
+                  ? metalGradient(highlightX: _highlightAnim.value)
+                  : LinearGradient(
+                      colors: [widget.color.withOpacity(0.8), widget.color.withOpacity(0.4)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(widget.species, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                    Row(
+                      children: List.generate(6, (i) => Icon(
+                        i < widget.star ? Icons.star : Icons.star_border,
+                        color: Colors.amber,
+                        size: 18,
+                      )),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(widget.description, style: const TextStyle(color: Colors.white, fontSize: 12)),
+                  ],
+                ),
+                const Spacer(),
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Text(
+                    getAttributeEmoji(widget.attribute),
+                    style: const TextStyle(fontSize: 32),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+// 사이드 라인
+class _SideLine extends StatefulWidget {
+  final Color color;
+  final bool isSSR;
+  const _SideLine({required this.color, required this.isSSR});
+  @override
+  State<_SideLine> createState() => _SideLineState();
+}
+class _SideLineState extends State<_SideLine> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _highlightAnim;
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 2))..repeat();
+    _highlightAnim = Tween<double>(begin: 0.0, end: 1.0)
+      .animate(CurvedAnimation(
+        parent: _controller,
+        curve: const _HighlightPauseCurve(),
+      ));
+  }
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _highlightAnim,
+      builder: (context, child) {
+        return Container(
+          width: 8,
+          margin: const EdgeInsets.symmetric(vertical: 40),
+          decoration: BoxDecoration(
+            gradient: widget.isSSR
+                ? metalGradient(highlightX: _highlightAnim.value)
+                : LinearGradient(
+                    colors: [widget.color.withOpacity(0.2), widget.color],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+            borderRadius: BorderRadius.circular(8),
+          ),
+        );
+      },
+    );
+  }
 }
 
 class _RarityBadge extends StatelessWidget {
@@ -611,6 +733,57 @@ String getAttributeEmoji(String attribute) {
       return '🔳';
     default:
       return '❔';
+  }
+}
+
+// 빛나는 효과 위젯
+class AnimatedGlow extends StatefulWidget {
+  @override
+  State<AnimatedGlow> createState() => _AnimatedGlowState();
+}
+
+class _AnimatedGlowState extends State<AnimatedGlow> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _anim;
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 2))..repeat(reverse: true);
+    _anim = Tween<double>(begin: 0.4, end: 1.0).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+  }
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _anim,
+      builder: (context, child) {
+        return Container(
+          decoration: BoxDecoration(
+            gradient: RadialGradient(
+              colors: [
+                Colors.amberAccent.withOpacity(_anim.value * 0.3),
+                Colors.transparent,
+              ],
+              radius: 1.2,
+              center: Alignment.center,
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _HighlightPauseCurve extends Curve {
+  const _HighlightPauseCurve();
+  @override
+  double transform(double t) {
+    if (t < 0.5) return 0.0; // 0~1초: 대기
+    return (t - 0.5) * 2.0; // 1~2초: 0~1로 선형 증가
   }
 }
 

@@ -1,7 +1,6 @@
 // 바몬 카드 위젯 (리스트용)
 import 'package:flutter/material.dart';
 import '../models/barmon.dart';
-import 'barmon_badge.dart';
 
 class BarMonCard extends StatelessWidget {
   final BarMon barMon;
@@ -82,13 +81,28 @@ class BarMonCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      barMon.name,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          barMon.name,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                        const Spacer(),
+                        Text(
+                          barMon.rarity.displayName,
+                          style: TextStyle(
+                            color: barMon.rarity.color,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                      ],
                     ),
                     const SizedBox(height: 4),
                     Text(

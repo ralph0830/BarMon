@@ -1,0 +1,47 @@
+[
+    {
+        "id": 1,
+        "name": "AbyssGuardian",
+        "species": "수호자",
+        "rarity": "legendary",
+        "star": 5,
+        "nature": "용감함",
+        "tendency": "공격형",
+        "potential": 98,
+        "hp": 320,
+        "attack": 150,
+        "defense": 120,
+        "agility": 80,
+        "luck": 70
+    },
+    {
+        "id": 2,
+        "name": "FlameClaw",
+        "species": "야수",
+        "rarity": "rare",
+        "star": 3,
+        "nature": "성급함",
+        "tendency": "속공형",
+        "potential": 85,
+        "hp": 210,
+        "attack": 110,
+        "defense": 70,
+        "agility": 120,
+        "luck": 60
+    },
+    {
+        "id": 3,
+        "name": "DewLeaf",
+        "species": "정령",
+        "rarity": "uncommon",
+        "star": 2,
+        "nature": "차분함",
+        "tendency": "방어형",
+        "potential": 73,
+        "hp": 180,
+        "attack": 60,
+        "defense": 90,
+        "agility": 70,
+        "luck": 80
+    }
+]

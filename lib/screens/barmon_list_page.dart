@@ -20,16 +20,15 @@ class _BarmonListPageState extends ConsumerState<BarmonListPage> {
 
   void _onScan(String barcode) async {
     setState(() { _showCamera = false; });
-    // 바몬 소환
+    // 바몬 소환(로컬 StateNotifierProvider 사용)
     ref.read(barMonListProvider.notifier).addBarMonFromScan(
       barcode: barcode,
       accountId: 'demo_user', // 실제 서비스에서는 계정 정보 사용
     );
-    // 소환 이펙트
     setState(() {
       _isSummoning = true;
-      final barMon = ref.read(barMonListProvider).last;
-      _summonName = barMon.name;
+      final barMons = ref.read(barMonListProvider);
+      _summonName = barMons.isNotEmpty ? barMons.last.name : null;
     });
     await Future.delayed(const Duration(seconds: 2));
     setState(() { _isSummoning = false; _summonName = null; });

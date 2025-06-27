@@ -1,6 +1,7 @@
 // 바몬(Barcodian) 데이터 모델
 // 레퍼런스 이미지와 PRD를 기반으로 설계
 
+import 'package:flutter/material.dart';
 
 enum BarMonType {
   grass,
@@ -75,13 +76,26 @@ extension BarMonRarityExtension on BarMonRarity {
   String get displayName {
     switch (this) {
       case BarMonRarity.normal:
-        return '노멀';
+        return 'N';
       case BarMonRarity.rare:
-        return '레어';
+        return 'R';
       case BarMonRarity.epic:
-        return '에픽';
+        return 'SR';
       case BarMonRarity.legend:
-        return '레전드';
+        return 'L';
+    }
+  }
+
+  Color get color {
+    switch (this) {
+      case BarMonRarity.normal:
+        return const Color(0xFFB0BEC5); // 회색
+      case BarMonRarity.rare:
+        return const Color(0xFF42A5F5); // 파랑
+      case BarMonRarity.epic:
+        return const Color(0xFFAB47BC); // 보라
+      case BarMonRarity.legend:
+        return const Color(0xFFFFD600); // 금색
     }
   }
 }
@@ -130,4 +144,52 @@ class BarMon {
     required this.starGrade,
     required this.attribute,
   });
+
+  factory BarMon.fromJson(Map<String, dynamic> json) {
+    return BarMon(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      engName: json['eng_name'] as String,
+      types: (json['types'] as List<dynamic>).map((e) => BarMonType.values.firstWhere((t) => t.name.toLowerCase() == (e as String).toLowerCase(), orElse: () => BarMonType.normal)).toList(),
+      imageUrl: json['image_url'] as String,
+      level: json['level'] as int,
+      exp: json['exp'] as int,
+      attack: json['attack'] as int,
+      defense: json['defense'] as int,
+      hp: json['hp'] as int,
+      speed: json['speed'] as int,
+      agility: json['agility'] as int,
+      luck: json['luck'] as int,
+      species: json['species'] as String,
+      rarity: BarMonRarity.values.firstWhere((r) => r.name.toLowerCase() == (json['rarity'] as String).toLowerCase(), orElse: () => BarMonRarity.normal),
+      nature: json['nature'] as String,
+      trait: json['trait'] as String,
+      potential: json['potential'] as int,
+      starGrade: json['star_grade'] as int,
+      attribute: json['attribute'] as String,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'name': name,
+    'eng_name': engName,
+    'types': types.map((e) => e.name).toList(),
+    'image_url': imageUrl,
+    'level': level,
+    'exp': exp,
+    'attack': attack,
+    'defense': defense,
+    'hp': hp,
+    'speed': speed,
+    'agility': agility,
+    'luck': luck,
+    'species': species,
+    'rarity': rarity.name,
+    'nature': nature,
+    'trait': trait,
+    'potential': potential,
+    'star_grade': starGrade,
+    'attribute': attribute,
+  };
 }
