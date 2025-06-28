@@ -78,7 +78,10 @@ class _BarmonListPageState extends ConsumerState<BarmonListPage> {
                             Navigator.of(context).push(
                               PageRouteBuilder(
                                 pageBuilder: (context, animation, secondaryAnimation) =>
-                                  BarMonDetailPage(barMon: barMon),
+                                  Material(
+                                    color: Colors.transparent,
+                                    child: BarMonDetailPage(barMon: barMon),
+                                  ),
                                 transitionsBuilder: (context, animation, secondaryAnimation, child) {
                                   return FadeTransition(
                                     opacity: animation,
