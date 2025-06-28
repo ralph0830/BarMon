@@ -2,9 +2,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'screens/barmon_list_page.dart';
+import 'package:device_preview/device_preview.dart';
+import 'package:flutter/foundation.dart';
 
 void main() {
-  runApp(const ProviderScope(child: BarmonApp()));
+  runApp(
+    DevicePreview(
+      enabled: !kReleaseMode,
+      builder: (context) => const ProviderScope(child: BarmonApp()),
+    ),
+  );
 }
 
 class BarmonApp extends StatelessWidget {
@@ -21,6 +28,9 @@ class BarmonApp extends StatelessWidget {
       ),
       home: const BarmonListPage(),
       debugShowCheckedModeBanner: false,
+      useInheritedMediaQuery: true,
+      builder: DevicePreview.appBuilder,
+      locale: DevicePreview.locale(context),
     );
   }
 }

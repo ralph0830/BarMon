@@ -52,7 +52,6 @@ class BarMonDetailPage extends StatefulWidget {
 
 class _BarMonDetailPageState extends State<BarMonDetailPage> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late Animation<double> _glowAnim;
   bool _hideInfoOverlay = false;
 
   @override
@@ -62,10 +61,6 @@ class _BarMonDetailPageState extends State<BarMonDetailPage> with SingleTickerPr
       vsync: this,
       duration: const Duration(seconds: 2),
     )..repeat(reverse: true);
-    _glowAnim = Tween<double>(begin: 0.5, end: 1.0).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeInOut,
-    ));
   }
 
   @override
@@ -119,9 +114,11 @@ class _BarMonDetailPageState extends State<BarMonDetailPage> with SingleTickerPr
         return 'N';
       case BarMonRarity.rare:
         return 'R';
-      case BarMonRarity.epic:
+      case BarMonRarity.superRare:
         return 'SR';
-      case BarMonRarity.legend:
+      case BarMonRarity.superSpecialRare:
+        return 'SSR';
+      case BarMonRarity.legendary:
         return 'SSR';
     }
   }
@@ -132,9 +129,11 @@ class _BarMonDetailPageState extends State<BarMonDetailPage> with SingleTickerPr
         return Colors.grey;
       case BarMonRarity.rare:
         return Colors.blue;
-      case BarMonRarity.epic:
+      case BarMonRarity.superRare:
         return Colors.purple;
-      case BarMonRarity.legend:
+      case BarMonRarity.superSpecialRare:
+        return Colors.orange;
+      case BarMonRarity.legendary:
         return Colors.orange;
     }
   }
@@ -143,102 +142,64 @@ class _BarMonDetailPageState extends State<BarMonDetailPage> with SingleTickerPr
   Widget build(BuildContext context) {
     final barMon = widget.barMon;
     final typeColor = getTypeColor(barMon.types.first);
-    final isSSR = barMon.rarity == BarMonRarity.legend;
+    final isSSR = barMon.rarity == BarMonRarity.legendary;
     return Center(
       child: FractionallySizedBox(
-        widthFactor: 0.9,
+        widthFactor: 1.0,
         heightFactor: 0.9,
-        child: AnimatedBuilder(
-          animation: _glowAnim,
-          builder: (context, child) {
-            final borderColor = isSSR
-                ? typeColor.withValues(alpha: _glowAnim.value)
-                : typeColor;
-            return Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: borderColor, width: 4),
-                borderRadius: BorderRadius.circular(24),
-                color: Colors.white,
-              ),
-              child: child,
-            );
-          },
           child: Stack(
             children: [
-              // 상단 프레임/라인/등급
-              Positioned(
-                top: 0, left: 0, right: 0,
-                child: _CardTopFrame(
-                  name: barMon.name,
-                  rarity: barMon.rarity,
-                  color: typeColor,
-                ),
-              ),
-              // 좌/우 세로 라인
-              Positioned(left: 0, top: 0, bottom: 0, child: _SideLine(color: typeColor, isSSR: isSSR)),
-              Positioned(right: 0, top: 0, bottom: 0, child: _SideLine(color: typeColor, isSSR: isSSR)),
-              // 하단 배너/프레임
-              Positioned(
-                bottom: 0, left: 0, right: 0,
-                child: _CardBottomBanner(
-                  species: barMon.species,
-                  star: _getStarGrade(barMon),
-                  description: '이 바몬에 대한 설명이 없습니다.',
-                  color: typeColor,
-                  attribute: barMon.attribute,
-                ),
-              ),
-              // 카드 내용(이미지, 능력치 등)
+            // 프레임 전체 배경
+            _CardFrameBackground(isSSR: isSSR, color: typeColor),
+            // 내용(이미지, 능력치, 오버레이)
               Padding(
-                padding: const EdgeInsets.fromLTRB(0, 56, 0, 80),
+              padding: const EdgeInsets.fromLTRB(5, 56, 5, 80),
                 child: SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // 고정 크기 1:1 이미지 + 오버레이
+                    // 이미지 + 오버레이
                       Stack(
                         children: [
-                          GestureDetector(
-                            onTapDown: (_) => setState(() => _hideInfoOverlay = true),
-                            onTapUp: (_) => setState(() => _hideInfoOverlay = false),
-                            onTapCancel: () => setState(() => _hideInfoOverlay = false),
-                            child: Container(
+                        GestureDetector(
+                          onTapDown: (_) => setState(() => _hideInfoOverlay = true),
+                          onTapUp: (_) => setState(() => _hideInfoOverlay = false),
+                          onTapCancel: () => setState(() => _hideInfoOverlay = false),
+                          child: Container(
+                            width: 320,
+                            height: 320,
+                            alignment: Alignment.center,
+                            child: Image.asset(
+                              barMon.imageUrl,
                               width: 320,
                               height: 320,
-                              alignment: Alignment.center,
-                              child: Image.asset(
-                                barMon.imageUrl,
-                                width: 320,
-                                height: 320,
-                                fit: BoxFit.cover,
-                              ),
+                              fit: BoxFit.cover,
                             ),
                           ),
-                          // 잠재력, 성격, 성향 (이미지 하단 중앙 오버레이)
-                          if (!_hideInfoOverlay)
-                            Positioned(
-                              left: 0,
-                              right: 0,
-                              bottom: 0,
-                              child: Center(
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      _InfoChip(label: '잠재력', value: barMon.potential.toString()),
-                                      const SizedBox(width: 8),
-                                      _InfoChip(label: '성격', value: barMon.nature),
-                                      const SizedBox(width: 8),
-                                      _InfoChip(label: '성향', value: barMon.trait),
-                                    ],
-                                  ),
+                        ),
+                        if (!_hideInfoOverlay)
+                          Positioned(
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            child: Center(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    _InfoChip(label: '잠재력', value: barMon.potential.toString()),
+                                    const SizedBox(width: 8),
+                                    _InfoChip(label: '성격', value: barMon.nature),
+                                    const SizedBox(width: 8),
+                                    _InfoChip(label: '성향', value: barMon.trait),
+                                  ],
                                 ),
                               ),
                             ),
+                          ),
                         ],
                       ),
-                      // 이미지와 능력치 표 사이 여백 최소화
                       const SizedBox(height: 12),
                       // 능력치 표
                       Padding(
@@ -275,8 +236,71 @@ class _BarMonDetailPageState extends State<BarMonDetailPage> with SingleTickerPr
                   ),
                 ),
               ),
-            ],
-          ),
+            // 상단바 텍스트/희귀도 Overlay
+            Positioned(
+              top: 0, left: 0, right: 0,
+              child: Container(
+                color: Colors.transparent,
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+                    Text(
+                      barMon.name,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+                letterSpacing: 1.2,
+                fontFamily: 'GmarketSansTTFBold',
+              ),
+            ),
+                    _RarityBadge(rarity: barMon.rarity),
+                  ],
+                ),
+              ),
+            ),
+            // 하단바 Overlay
+            Positioned(
+              left: 0, right: 0, bottom: 0,
+              child: ClipPath(
+      clipper: _BannerClipper(),
+      child: Container(
+        height: 80,
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                  color: Colors.transparent,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                          Text(barMon.species, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                Row(
+                  children: List.generate(6, (i) => Icon(
+                              i < _getStarGrade(barMon) ? Icons.star : Icons.star_border,
+                    color: Colors.amber,
+                    size: 18,
+                  )),
+                ),
+                const SizedBox(height: 2),
+                          const Text('이 바몬에 대한 설명이 없습니다.', style: TextStyle(color: Colors.white, fontSize: 12)),
+              ],
+            ),
+            const Spacer(),
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(
+                          getAttributeEmoji(barMon.attribute),
+                style: const TextStyle(fontSize: 32),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -290,16 +314,16 @@ LinearGradient metalGradient({double highlightX = -1}) {
       : [0.0, 0.5, 1.0];
   final colors = highlightX >= 0
       ? [
-          Color(0xFFB0BEC5),
-          Color(0xFFB0BEC5),
-          Colors.white.withOpacity(0.8),
-          Color(0xFFB0BEC5),
-          Color(0xFF757575),
+          const Color(0xFFB0BEC5),
+          const Color(0xFFB0BEC5),
+          Colors.white.withAlpha((255 * 0.8).round()),
+          const Color(0xFFB0BEC5),
+          const Color(0xFF757575),
         ]
       : [
-          Color(0xFFB0BEC5),
-          Colors.white.withOpacity(0.5),
-          Color(0xFF757575),
+          const Color(0xFFB0BEC5),
+          Colors.white.withAlpha((255 * 0.5).round()),
+          const Color(0xFF757575),
         ];
   return LinearGradient(
     colors: colors,
@@ -309,16 +333,15 @@ LinearGradient metalGradient({double highlightX = -1}) {
   );
 }
 
-// 상단바
-class _CardTopFrame extends StatefulWidget {
-  final String name;
-  final BarMonRarity rarity;
+// 1. 프레임 전체 배경 위젯
+class _CardFrameBackground extends StatefulWidget {
+  final bool isSSR;
   final Color color;
-  const _CardTopFrame({required this.name, required this.rarity, required this.color});
+  const _CardFrameBackground({required this.isSSR, required this.color});
   @override
-  State<_CardTopFrame> createState() => _CardTopFrameState();
+  State<_CardFrameBackground> createState() => _CardFrameBackgroundState();
 }
-class _CardTopFrameState extends State<_CardTopFrame> with SingleTickerProviderStateMixin {
+class _CardFrameBackgroundState extends State<_CardFrameBackground> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _highlightAnim;
   @override
@@ -338,63 +361,27 @@ class _CardTopFrameState extends State<_CardTopFrame> with SingleTickerProviderS
   }
   @override
   Widget build(BuildContext context) {
-    final isSSR = widget.rarity == BarMonRarity.legend;
-    return AnimatedBuilder(
-      animation: _highlightAnim,
-      builder: (context, child) {
-        return Container(
-          height: 56,
-          decoration: BoxDecoration(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-            gradient: isSSR
-                ? metalGradient(highlightX: _highlightAnim.value)
-                : LinearGradient(
-                    colors: [widget.color.withOpacity(0.8), widget.color.withOpacity(0.4)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-          ),
-          child: Stack(
-            children: [
-              Positioned(
-                left: 20,
-                top: 12,
-                child: Text(
-                  widget.name,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 24,
-                    letterSpacing: 1.2,
-                    fontFamily: 'GmarketSansTTFBold',
-                  ),
-                ),
-              ),
-              Positioned(
-                right: 20,
-                top: 12,
-                child: _RarityBadge(rarity: widget.rarity),
-              ),
-              // 대각선 라인 효과
-              Positioned(
-                right: 0,
-                top: 0,
-                child: Transform.rotate(
-                  angle: -0.2,
-                  child: Container(
-                    width: 80,
-                    height: 12,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.15),
-                      borderRadius: BorderRadius.circular(8),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(24),
+      child: AnimatedBuilder(
+        animation: _highlightAnim,
+        builder: (context, child) {
+          return Container(
+            decoration: BoxDecoration(
+              gradient: widget.isSSR
+                  ? metalGradient(highlightX: _highlightAnim.value)
+                  : LinearGradient(
+                      colors: [
+                        widget.color.withAlpha(255),
+                        widget.color.withAlpha(255),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
+            ),
+          );
+        },
+      ),
     );
   }
 }
@@ -416,140 +403,6 @@ class _BannerClipper extends CustomClipper<Path> {
   bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
 
-// 하단바
-class _CardBottomBanner extends StatefulWidget {
-  final String species;
-  final int star;
-  final String description;
-  final Color color;
-  final String attribute;
-  const _CardBottomBanner({required this.species, required this.star, required this.description, required this.color, required this.attribute});
-  @override
-  State<_CardBottomBanner> createState() => _CardBottomBannerState();
-}
-class _CardBottomBannerState extends State<_CardBottomBanner> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _highlightAnim;
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 2))..repeat();
-    _highlightAnim = Tween<double>(begin: 0.0, end: 1.0)
-      .animate(CurvedAnimation(
-        parent: _controller,
-        curve: const _HighlightPauseCurve(),
-      ));
-  }
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-  @override
-  Widget build(BuildContext context) {
-    final isSSR = widget.star == 5;
-    return AnimatedBuilder(
-      animation: _highlightAnim,
-      builder: (context, child) {
-        return ClipPath(
-          clipper: _BannerClipper(),
-          child: Container(
-            height: 80,
-            decoration: BoxDecoration(
-              gradient: isSSR
-                  ? metalGradient(highlightX: _highlightAnim.value)
-                  : LinearGradient(
-                      colors: [widget.color.withOpacity(0.8), widget.color.withOpacity(0.4)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(widget.species, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
-                    Row(
-                      children: List.generate(6, (i) => Icon(
-                        i < widget.star ? Icons.star : Icons.star_border,
-                        color: Colors.amber,
-                        size: 18,
-                      )),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(widget.description, style: const TextStyle(color: Colors.white, fontSize: 12)),
-                  ],
-                ),
-                const Spacer(),
-                Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Text(
-                    getAttributeEmoji(widget.attribute),
-                    style: const TextStyle(fontSize: 32),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-// 사이드 라인
-class _SideLine extends StatefulWidget {
-  final Color color;
-  final bool isSSR;
-  const _SideLine({required this.color, required this.isSSR});
-  @override
-  State<_SideLine> createState() => _SideLineState();
-}
-class _SideLineState extends State<_SideLine> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _highlightAnim;
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 2))..repeat();
-    _highlightAnim = Tween<double>(begin: 0.0, end: 1.0)
-      .animate(CurvedAnimation(
-        parent: _controller,
-        curve: const _HighlightPauseCurve(),
-      ));
-  }
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _highlightAnim,
-      builder: (context, child) {
-        return Container(
-          width: 8,
-          margin: const EdgeInsets.symmetric(vertical: 40),
-          decoration: BoxDecoration(
-            gradient: widget.isSSR
-                ? metalGradient(highlightX: _highlightAnim.value)
-                : LinearGradient(
-                    colors: [widget.color.withOpacity(0.2), widget.color],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
-            borderRadius: BorderRadius.circular(8),
-          ),
-        );
-      },
-    );
-  }
-}
-
 class _RarityBadge extends StatelessWidget {
   final BarMonRarity rarity;
   const _RarityBadge({required this.rarity});
@@ -563,18 +416,21 @@ class _RarityBadge extends StatelessWidget {
       case BarMonRarity.rare:
         label = 'R';
         break;
-      case BarMonRarity.epic:
+      case BarMonRarity.superRare:
         label = 'SR';
         break;
-      case BarMonRarity.legend:
+      case BarMonRarity.superSpecialRare:
         label = 'SSR';
+        break;
+      case BarMonRarity.legendary:
+        label = 'L';
         break;
     }
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: Colors.black12,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.all(Radius.circular(12)),
       ),
       child: Text(label, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
     );
@@ -584,7 +440,7 @@ class _RarityBadge extends StatelessWidget {
 class _StatInfoTile extends StatelessWidget {
   final String name;
   final int value;
-  const _StatInfoTile({required this.name, required this.value});
+  const _StatInfoTile({Key? key, required this.name, required this.value}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -621,7 +477,7 @@ class _StatInfoTile extends StatelessWidget {
 class _StatBar extends StatelessWidget {
   final String label;
   final int value; // 0~100, 150 등
-  const _StatBar({required this.label, required this.value});
+  const _StatBar({Key? key, required this.label, required this.value}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -641,25 +497,10 @@ class _StatBar extends StatelessWidget {
   }
 }
 
-class _StarRating extends StatelessWidget {
-  final int grade; // 1~5
-  const _StarRating({required this.grade});
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: List.generate(5, (i) => Icon(
-        i < grade ? Icons.star : Icons.star_border,
-        color: Colors.amber,
-        size: 20,
-      )),
-    );
-  }
-}
-
 int _getStarGrade(BarMon b) {
-  if (b.rarity == BarMonRarity.legend) return 5;
-  if (b.rarity == BarMonRarity.epic) return 4;
-  if (b.rarity == BarMonRarity.rare) return 3;
+  if (b.rarity == BarMonRarity.legendary) return 5;
+  if (b.rarity == BarMonRarity.superRare) return 4;
+  if (b.rarity == BarMonRarity.superSpecialRare) return 3;
   if (b.attack + b.defense + b.hp > 300) return 2;
   return 1;
 }
@@ -667,7 +508,7 @@ int _getStarGrade(BarMon b) {
 class _InfoChip extends StatelessWidget {
   final String label;
   final String value;
-  const _InfoChip({required this.label, required this.value});
+  const _InfoChip({Key? key, required this.label, required this.value}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     final showLabel = label != '성격' && label != '성향';
@@ -678,19 +519,6 @@ class _InfoChip extends StatelessWidget {
       ),
       backgroundColor: Colors.grey[200],
     );
-  }
-}
-
-String _rarityLabel(BarMonRarity rarity) {
-  switch (rarity) {
-    case BarMonRarity.normal:
-      return 'N';
-    case BarMonRarity.rare:
-      return 'R';
-    case BarMonRarity.epic:
-      return 'SR';
-    case BarMonRarity.legend:
-      return 'SSR';
   }
 }
 
@@ -738,6 +566,8 @@ String getAttributeEmoji(String attribute) {
 
 // 빛나는 효과 위젯
 class AnimatedGlow extends StatefulWidget {
+  const AnimatedGlow({super.key});
+
   @override
   State<AnimatedGlow> createState() => _AnimatedGlowState();
 }
@@ -765,7 +595,7 @@ class _AnimatedGlowState extends State<AnimatedGlow> with SingleTickerProviderSt
           decoration: BoxDecoration(
             gradient: RadialGradient(
               colors: [
-                Colors.amberAccent.withOpacity(_anim.value * 0.3),
+                Colors.amberAccent.withAlpha((255 * (_anim.value * 0.3)).round()),
                 Colors.transparent,
               ],
               radius: 1.2,
@@ -784,6 +614,56 @@ class _HighlightPauseCurve extends Curve {
   double transform(double t) {
     if (t < 0.5) return 0.0; // 0~1초: 대기
     return (t - 0.5) * 2.0; // 1~2초: 0~1로 선형 증가
+  }
+}
+
+// 바몬 상세 Swiper (PageView 기반)
+class BarMonDetailSwiper extends StatefulWidget {
+  final List<BarMon> barMons;
+  final int initialIndex;
+  const BarMonDetailSwiper({
+    Key? key,
+    required this.barMons,
+    required this.initialIndex,
+  }) : super(key: key);
+
+  @override
+  State<BarMonDetailSwiper> createState() => _BarMonDetailSwiperState();
+}
+
+class _BarMonDetailSwiperState extends State<BarMonDetailSwiper> {
+  late PageController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = PageController(initialPage: widget.initialIndex, viewportFraction: 0.85);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PageView.builder(
+      controller: _controller,
+      itemCount: widget.barMons.length,
+      itemBuilder: (context, index) {
+        return AnimatedBuilder(
+          animation: _controller,
+          builder: (context, child) {
+            double value = 1.0;
+            if (_controller.position.haveDimensions) {
+              value = ((_controller.page ?? _controller.initialPage) - index).toDouble();
+              value = (1 - (value.abs() * 0.15)).clamp(0.85, 1.0).toDouble();
+            }
+            return Center(
+              child: Transform.scale(
+                scale: value,
+                child: BarMonDetailPage(barMon: widget.barMons[index]),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 }
 

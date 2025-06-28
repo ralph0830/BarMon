@@ -69,25 +69,29 @@ class _BarmonListPageState extends ConsumerState<BarmonListPage> {
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
-                      child: ListView.builder(
+                      child: ListView.separated(
                         itemCount: barMons.length,
+                        separatorBuilder: (context, index) => const SizedBox(height: 3),
                         itemBuilder: (context, index) {
                           final barMon = barMons[index];
                           return BarMonCard(barMon: barMon, onTap: () {
-                              showDialog(
-                                context: context,
-                                barrierDismissible: true,
-                                builder: (context) => Center(
-                                  child: FractionallySizedBox(
-                                    widthFactor: 0.9,
-                                    heightFactor: 0.9,
-                                    child: Material(
-                                      color: Colors.transparent,
-                                    child: BarMonDetailPage(barMon: barMon),
+                            showDialog(
+                              context: context,
+                              barrierDismissible: true,
+                              builder: (context) => Center(
+                                child: FractionallySizedBox(
+                                  widthFactor: 0.9,
+                                  heightFactor: 0.9,
+                                  child: Material(
+                                    color: Colors.transparent,
+                                    child: BarMonDetailSwiper(
+                                      barMons: barMons,
+                                      initialIndex: index,
                                     ),
                                   ),
                                 ),
-                              );
+                              ),
+                            );
                           });
                         },
                       ),
@@ -143,7 +147,7 @@ class _BarmonListPageState extends ConsumerState<BarmonListPage> {
                   if (_isSummoning && _summonName != null)
                     Positioned.fill(
                       child: Container(
-                        color: Colors.black.withOpacity(0.7),
+                        color: Colors.black.withAlpha((255 * 0.7).round()),
                         child: Center(
                           child: AnimatedScale(
                             scale: _isSummoning ? 1.2 : 0.8,
@@ -156,7 +160,7 @@ class _BarmonListPageState extends ConsumerState<BarmonListPage> {
                                 children: [
                                   const Icon(Icons.auto_awesome, color: Colors.amber, size: 80),
                                   const SizedBox(height: 24),
-                                  Text('바몬 소환!', style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
+                                  const Text('바몬 소환!', style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
                                   const SizedBox(height: 12),
                                   Text(_summonName!, style: const TextStyle(color: Colors.white, fontSize: 22)),
                                 ],
@@ -235,9 +239,9 @@ class _ScanEffectState extends State<_ScanEffect> with SingleTickerProviderState
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          Colors.redAccent.withOpacity(0.0),
-                          Colors.redAccent.withOpacity(0.3),
-                          Colors.redAccent.withOpacity(0.0),
+                          Colors.redAccent.withAlpha((255 * 0.0).round()),
+                          Colors.redAccent.withAlpha((255 * 0.3).round()),
+                          Colors.redAccent.withAlpha((255 * 0.0).round()),
                         ],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,

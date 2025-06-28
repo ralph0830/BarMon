@@ -68,8 +68,9 @@ extension BarMonTypeExtension on BarMonType {
 enum BarMonRarity {
   normal,
   rare,
-  epic,
-  legend,
+  superRare,
+  superSpecialRare,
+  legendary,
 }
 
 extension BarMonRarityExtension on BarMonRarity {
@@ -79,9 +80,11 @@ extension BarMonRarityExtension on BarMonRarity {
         return 'N';
       case BarMonRarity.rare:
         return 'R';
-      case BarMonRarity.epic:
+      case BarMonRarity.superRare:
         return 'SR';
-      case BarMonRarity.legend:
+      case BarMonRarity.superSpecialRare:
+        return 'SSR';
+      case BarMonRarity.legendary:
         return 'L';
     }
   }
@@ -89,13 +92,39 @@ extension BarMonRarityExtension on BarMonRarity {
   Color get color {
     switch (this) {
       case BarMonRarity.normal:
-        return const Color(0xFFB0BEC5); // 회색
+        return const Color(0xFFB0BEC5);
       case BarMonRarity.rare:
-        return const Color(0xFF42A5F5); // 파랑
-      case BarMonRarity.epic:
-        return const Color(0xFFAB47BC); // 보라
-      case BarMonRarity.legend:
-        return const Color(0xFFFFD600); // 금색
+        return const Color(0xFF42A5F5);
+      case BarMonRarity.superRare:
+        return const Color(0xFFAB47BC);
+      case BarMonRarity.superSpecialRare:
+        return const Color(0xFFFFA000);
+      case BarMonRarity.legendary:
+        return const Color(0xFFFFD600);
+    }
+  }
+
+  static BarMonRarity fromString(String value) {
+    switch (value.toLowerCase().replaceAll('_', ' ')) {
+      case 'normal':
+      case 'n':
+        return BarMonRarity.normal;
+      case 'rare':
+      case 'r':
+        return BarMonRarity.rare;
+      case 'super rare':
+      case 'superrare':
+      case 'sr':
+        return BarMonRarity.superRare;
+      case 'super special rare':
+      case 'superspecialrare':
+      case 'ssr':
+        return BarMonRarity.superSpecialRare;
+      case 'legendary':
+      case 'l':
+        return BarMonRarity.legendary;
+      default:
+        return BarMonRarity.normal;
     }
   }
 }
@@ -161,7 +190,7 @@ class BarMon {
       agility: json['agility'] as int,
       luck: json['luck'] as int,
       species: json['species'] as String,
-      rarity: BarMonRarity.values.firstWhere((r) => r.name.toLowerCase() == (json['rarity'] as String).toLowerCase(), orElse: () => BarMonRarity.normal),
+      rarity: BarMonRarityExtension.fromString(json['rarity'] as String),
       nature: json['nature'] as String,
       trait: json['trait'] as String,
       potential: json['potential'] as int,

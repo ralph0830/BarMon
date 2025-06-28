@@ -16,7 +16,7 @@ export const barmon = pgTable('barmon', {
   agility: integer('agility'),
   luck: integer('luck'),
   species: varchar('species', { length: 32 }),
-  rarity: varchar('rarity', { length: 16 }),
+  rarity: varchar('rarity', { length: 24 }),
   nature: varchar('nature', { length: 16 }),
   trait: varchar('trait', { length: 16 }),
   potential: integer('potential'),

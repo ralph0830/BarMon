@@ -53,8 +53,8 @@ BarMon generateBarMon({
   final defense = 30 + hex(seed.substring(10, 12)) % 71;
   final hp = 50 + hex(seed.substring(12, 14)) % 101; // 50~150
   final speed = 20 + hex(seed.substring(14, 16)) % 81; // 20~100
-  final level = 1;
-  final exp = 0;
+  const level = 1;
+  const exp = 0;
   // 이미지(임시: 종족+속성 조합으로 결정, 실제는 서버/DB 연동)
   final imageUrl = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${speciesIdx + 1}.png';
   // id는 seed 앞 12자리
@@ -81,6 +81,22 @@ BarMon generateBarMon({
     trait: '기본',     // 임시값
     potential: 50,    // 임시값
     starGrade: 1,     // 임시값
-    attribute: '무속성', // TODO: seed에서 속성 추출 로직 구현
+    attribute: getAttributeFromType(types.first),
   );
+}
+
+String getAttributeFromType(BarMonType type) {
+  switch (type) {
+    case BarMonType.fire: return '불';
+    case BarMonType.water: return '물';
+    case BarMonType.electric: return '전기';
+    case BarMonType.ground: return '땅';
+    case BarMonType.ice: return '얼음';
+    case BarMonType.poison: return '독';
+    case BarMonType.steel: return '철';
+    case BarMonType.fairy: return '빛';
+    case BarMonType.dark: return '어둠';
+    case BarMonType.grass: return '식물';
+    default: return '';
+  }
 }

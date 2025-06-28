@@ -51,7 +51,7 @@ class BarMonBadge extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       margin: const EdgeInsets.only(right: 6),
       decoration: BoxDecoration(
-        color: typeColor.withOpacity(0.15),
+        color: typeColor.withAlpha((255 * 0.15).round()),
         border: Border.all(color: typeColor, width: 1.2),
         borderRadius: BorderRadius.circular(16),
       ),
