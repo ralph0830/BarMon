@@ -6,18 +6,18 @@
     "configurations": [
         
         {
-            "name": "barcodian",
+            "name": "barmon",
             "request": "launch",
             "type": "dart"
         },
         {
-            "name": "barcodian (profile mode)",
+            "name": "barmon (profile mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile"
         },
         {
-            "name": "barcodian (release mode)",
+            "name": "barmon (release mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"

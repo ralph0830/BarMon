@@ -184,7 +184,7 @@ class BarMonCard extends StatelessWidget {
                               const SizedBox(width: 12),
                               _StatIconText(label: '공격', value: barMon.attack, icon: Icons.gavel, iconColor: Colors.blue),
                               const SizedBox(width: 12),
-                              _StatIconText(label: '방어', value: barMon.defense, icon: Icons.shield, iconColor: Color(0xFF145A32)),
+                              _StatIconText(label: '방어', value: barMon.defense, icon: Icons.shield, iconColor: const Color(0xFF145A32)),
                             ],
                           ),
                         ],

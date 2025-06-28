@@ -13,7 +13,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_riverpod: ^2.4.0
-  mobile_scanner: ^3.5.7
+  mobile_scanner: ^3.5.2
   crypto: ^3.0.3
 
   cupertino_icons: ^1.0.2
@@ -29,3 +29,23 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    - assets/images/portrait/1/
+    - assets/images/portrait/2/
+    - assets/images/portrait/3/
+    - assets/images/portrait/4/
+    - assets/images/portrait/5/
+    - assets/images/portrait/6/
+    - assets/images/portrait/7/
+    - assets/images/portrait/8/
+    - assets/images/portrait/9/
+    - assets/images/portrait/10/
+    - assets/images/portrait/11/
+    - assets/images/portrait/12/
+    - assets/images/portrait/13/
+    - assets/images/portrait/14/
+    - assets/images/portrait/15/
+    - assets/images/portrait/16/
+    - assets/images/portrait/17/
+    - assets/images/portrait/18/
+    - assets/images/portrait/19/
+    - assets/images/portrait/20/
