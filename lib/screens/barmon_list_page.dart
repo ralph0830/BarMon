@@ -75,21 +75,20 @@ class _BarmonListPageState extends ConsumerState<BarmonListPage> {
                         itemBuilder: (context, index) {
                           final barMon = barMons[index];
                           return BarMonCard(barMon: barMon, onTap: () {
-                            showDialog(
-                              context: context,
-                              barrierDismissible: true,
-                              builder: (context) => Center(
-                                child: FractionallySizedBox(
-                                  widthFactor: 0.9,
-                                  heightFactor: 0.9,
-                                  child: Material(
-                                    color: Colors.transparent,
-                                    child: BarMonDetailSwiper(
-                                      barMons: barMons,
-                                      initialIndex: index,
+                            Navigator.of(context).push(
+                              PageRouteBuilder(
+                                pageBuilder: (context, animation, secondaryAnimation) =>
+                                  BarMonDetailPage(barMon: barMon),
+                                transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                  return FadeTransition(
+                                    opacity: animation,
+                                    child: ScaleTransition(
+                                      scale: Tween<double>(begin: 0.95, end: 1.0).animate(
+                                        CurvedAnimation(parent: animation, curve: Curves.easeOut)),
+                                      child: child,
                                     ),
-                                  ),
-                                ),
+                                  );
+                                },
                               ),
                             );
                           });

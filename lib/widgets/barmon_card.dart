@@ -117,12 +117,15 @@ class BarMonCard extends StatelessWidget {
                     padding: const EdgeInsets.all(12),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(16),
-                      child: Image.asset(
-                        barMon.imageUrl,
-                        width: 64,
-                        height: 64,
-                        fit: BoxFit.cover,
-                        alignment: Alignment.center,
+                      child: Hero(
+                        tag: 'barmon_${barMon.id}',
+                        child: Image.asset(
+                          barMon.imageUrl,
+                          width: 64,
+                          height: 64,
+                          fit: BoxFit.cover,
+                          alignment: Alignment.center,
+                        ),
                       ),
                     ),
                   ),

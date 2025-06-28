@@ -169,11 +169,14 @@ class _BarMonDetailPageState extends State<BarMonDetailPage> with SingleTickerPr
                             width: 320,
                             height: 320,
                             alignment: Alignment.center,
-                            child: Image.asset(
-                              barMon.imageUrl,
-                              width: 320,
-                              height: 320,
-                              fit: BoxFit.cover,
+                            child: Hero(
+                              tag: 'barmon_${barMon.id}',
+                              child: Image.asset(
+                                barMon.imageUrl,
+                                width: 320,
+                                height: 320,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
                         ),
