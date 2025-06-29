@@ -120,11 +120,20 @@ class BarMonCard extends StatelessWidget {
                       child: Hero(
                         tag: 'barmon_${barMon.id}',
                         child: Image.asset(
-                          barMon.imageUrl,
+                          barMon.portraitImageUrl,
                           width: 64,
                           height: 64,
                           fit: BoxFit.cover,
                           alignment: Alignment.center,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Image.asset(
+                              'assets/images/noimage.png',
+                              width: 64,
+                              height: 64,
+                              fit: BoxFit.cover,
+                              alignment: Alignment.center,
+                            );
+                          },
                         ),
                       ),
                     ),

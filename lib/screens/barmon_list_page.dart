@@ -1,10 +1,13 @@
 // 내 바몬 리스트 페이지 (스캔 버튼 포함)
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/barmon_provider.dart';
+import '../providers/user_barmon_provider.dart';
 import '../widgets/barmon_card.dart';
 import 'barmon_detail_page.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../models/barmon.dart';
+import '../guest_barmon_provider.dart';
 
 class BarmonListPage extends ConsumerStatefulWidget {
   const BarmonListPage({super.key});
@@ -17,28 +20,64 @@ class _BarmonListPageState extends ConsumerState<BarmonListPage> {
   bool _showCamera = false;
   bool _isSummoning = false;
   String? _summonName;
+  bool _initialized = false;
+
+  String? get _userId => Supabase.instance.client.auth.currentUser?.id;
+  bool get _isGuest => (ModalRoute.of(context)?.settings.arguments as Map?)?['guest'] == true;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_initialized && !_isGuest && _userId != null) {
+      Future.microtask(() => ref.read(userBarmonProvider.notifier).fetchUserBarmons(_userId!));
+      _initialized = true;
+    }
+  }
 
   void _onScan(String barcode) async {
     setState(() { _showCamera = false; });
-    // 바몬 소환(로컬 StateNotifierProvider 사용)
-    ref.read(barMonListProvider.notifier).addBarMonFromScan(
-      barcode: barcode,
-      accountId: 'demo_user', // 실제 서비스에서는 계정 정보 사용
+    final newBarMon = BarMon(
+      id: barcode,
+      name: '새 바몬',
+      engName: 'NewBarMon',
+      types: [BarMonType.normal],
+      level: 1,
+      exp: 0,
+      attack: 100,
+      defense: 100,
+      hp: 100,
+      speed: 0,
+      agility: 100,
+      luck: 100,
+      species: '야수형',
+      rarity: BarMonRarity.normal,
+      nature: '밸런스형',
+      trait: '기본',
+      potential: 50,
+      starGrade: 1,
+      attribute: '무',
     );
+    if (_isGuest) {
+      await ref.read(guestBarmonProvider.notifier).addGuestBarmon(newBarMon);
+    } else if (_userId != null) {
+      await ref.read(userBarmonProvider.notifier).addUserBarmon(newBarMon, _userId!);
+    }
     setState(() {
       _isSummoning = true;
-      final barMons = ref.read(barMonListProvider);
-      _summonName = barMons.isNotEmpty ? barMons.last.name : null;
+      _summonName = newBarMon.name;
     });
     await Future.delayed(const Duration(seconds: 2));
     setState(() { _isSummoning = false; _summonName = null; });
-    // 리스트로 이동
     _pageController.jumpToPage(0);
   }
 
   @override
   Widget build(BuildContext context) {
-    final barMons = ref.watch(barMonListProvider);
+    final barMons = _isGuest ? ref.watch(guestBarmonProvider) : ref.watch(userBarmonProvider);
+    // 디버그: 각 바몬의 id와 imageUrl 출력
+    for (final barMon in barMons) {
+      debugPrint('BarMon id: [33m[1m[4m${barMon.id}[0m, imageUrl: [36m${barMon.imageUrl}[0m');
+    }
     return Scaffold(
       backgroundColor: const Color(0xFFF7F7F7),
       body: Stack(
@@ -77,10 +116,15 @@ class _BarmonListPageState extends ConsumerState<BarmonListPage> {
                           return BarMonCard(barMon: barMon, onTap: () {
                             Navigator.of(context).push(
                               PageRouteBuilder(
+                                opaque: false,
+                                barrierColor: Colors.transparent,
                                 pageBuilder: (context, animation, secondaryAnimation) =>
                                   Material(
                                     color: Colors.transparent,
-                                    child: BarMonDetailPage(barMon: barMon),
+                                    child: BarMonDetailSwiper(
+                                      barMons: barMons,
+                                      initialIndex: index,
+                                    ),
                                   ),
                                 transitionsBuilder: (context, animation, secondaryAnimation, child) {
                                   return FadeTransition(

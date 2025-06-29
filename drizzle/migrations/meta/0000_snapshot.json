@@ -1,0 +1,215 @@
+{
+  "id": "773f92a9-7878-4810-8e0f-72a968ee5a85",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.barmon_master": {
+      "name": "barmon_master",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(36)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "eng_name": {
+          "name": "eng_name",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "types": {
+          "name": "types",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "image_url": {
+          "name": "image_url",
+          "type": "varchar(128)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "base_attack": {
+          "name": "base_attack",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "base_defense": {
+          "name": "base_defense",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "base_hp": {
+          "name": "base_hp",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "base_agility": {
+          "name": "base_agility",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "base_luck": {
+          "name": "base_luck",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "species": {
+          "name": "species",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rarity": {
+          "name": "rarity",
+          "type": "varchar(24)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "attribute": {
+          "name": "attribute",
+          "type": "varchar(16)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.user_barmon": {
+      "name": "user_barmon",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(36)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "varchar(36)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "barmon_id": {
+          "name": "barmon_id",
+          "type": "varchar(36)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "acquired_hp": {
+          "name": "acquired_hp",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "acquired_attack": {
+          "name": "acquired_attack",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "acquired_defense": {
+          "name": "acquired_defense",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "acquired_agility": {
+          "name": "acquired_agility",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "acquired_luck": {
+          "name": "acquired_luck",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "level": {
+          "name": "level",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 1
+        },
+        "exp": {
+          "name": "exp",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "potential": {
+          "name": "potential",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nature": {
+          "name": "nature",
+          "type": "varchar(16)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "trait": {
+          "name": "trait",
+          "type": "varchar(16)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "star_grade": {
+          "name": "star_grade",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

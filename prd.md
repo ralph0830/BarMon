@@ -36,6 +36,7 @@
 ### 5. 기타
 - pubspec.yaml: flutter_riverpod, mobile_scanner, crypto 등 의존성 명시
 - NDK 버전 이슈, adb 무선 디버깅 방법 등 개발 환경 팁
+- 인증 시스템은 Supabase Auth를 표준으로 사용하며, 계정/데이터/권한 관리를 Supabase Auth 및 Starbase 서버에서 처리한다.
 
 ---
 

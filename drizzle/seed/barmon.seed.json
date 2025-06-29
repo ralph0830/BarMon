@@ -1,6 +1,6 @@
 [
   {
-    "id": "1",
+    "id": "2a401cec-0ff6-4f8b-9864-d55cb73b2fe7",
     "name": "AbyssGuardian",
     "eng_name": "AbyssGuardian",
     "types": ["dark", "guardian"],
@@ -22,7 +22,7 @@
     "attribute": "dark"
   },
   {
-    "id": "2",
+    "id": "b90a0ec0-2b6c-442e-a1b8-49475bc2e64a",
     "name": "FlameClaw",
     "eng_name": "FlameClaw",
     "types": ["fire", "beast"],
@@ -44,7 +44,7 @@
     "attribute": "fire"
   },
   {
-    "id": "3",
+    "id": "507f6679-c08c-487b-a8ea-73a65b60370b",
     "name": "DewLeaf",
     "eng_name": "DewLeaf",
     "types": ["water", "spirit"],

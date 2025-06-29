@@ -13,12 +13,14 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_riverpod: ^2.4.0
-  mobile_scanner: ^3.5.2
+  http: ^1.2.1
+  mobile_scanner: ^3.5.5
   crypto: ^3.0.3
+  shared_preferences: ^2.0.0
+  supabase_flutter: ^2.0.0
+  google_sign_in: ^6.1.0
 
   cupertino_icons: ^1.0.2
-  http: ^1.4.0
-  device_preview: ^1.2.0
 
 dev_dependencies:
   flutter_test:
@@ -29,23 +31,24 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
-    - assets/images/portrait/1/
-    - assets/images/portrait/2/
-    - assets/images/portrait/3/
-    - assets/images/portrait/4/
-    - assets/images/portrait/5/
-    - assets/images/portrait/6/
-    - assets/images/portrait/7/
-    - assets/images/portrait/8/
-    - assets/images/portrait/9/
-    - assets/images/portrait/10/
-    - assets/images/portrait/11/
-    - assets/images/portrait/12/
-    - assets/images/portrait/13/
-    - assets/images/portrait/14/
-    - assets/images/portrait/15/
-    - assets/images/portrait/16/
-    - assets/images/portrait/17/
-    - assets/images/portrait/18/
-    - assets/images/portrait/19/
-    - assets/images/portrait/20/
+    - assets/images/portrait/0615d8ae-dcf1-4513-bb2c-44a55ab99506/
+    - assets/images/portrait/10f415a9-bcf8-44fa-a1af-a97ec694501a/
+    - assets/images/portrait/29023384-a4b5-4ca6-9ef6-57535c88fbe1/
+    - assets/images/portrait/29e28876-adff-45b7-87ac-364526e18f11/
+    - assets/images/portrait/2a401cec-0ff6-4f8b-9864-d55cb73b2fe7/
+    - assets/images/portrait/3217c801-5e86-449d-ad9b-fe70ae578a5a/
+    - assets/images/portrait/3b94192f-b682-4a24-8485-94f7cc3eb400/
+    - assets/images/portrait/3d37d8af-6171-4a5a-802b-c4f1797c96c6/
+    - assets/images/portrait/507f6679-c08c-487b-a8ea-73a65b60370b/
+    - assets/images/portrait/875d2833-3f08-489c-a009-e1dfaa364b51/
+    - assets/images/portrait/9ef1ec2b-eb02-4283-a10f-a55cbb13766f/
+    - assets/images/portrait/b90a0ec0-2b6c-442e-a1b8-49475bc2e64a/
+    - assets/images/portrait/c150591a-b033-4d64-adc9-af6365c2d64f/
+    - assets/images/portrait/c415d263-0ada-45bb-be1f-9458629655f7/
+    - assets/images/portrait/c746f519-107f-4791-b00f-b5150676e6a0/
+    - assets/images/portrait/ce5c8ef5-ebe5-488e-8aeb-59b9a9661baa/
+    - assets/images/portrait/d3d0e03c-7ae9-40bf-bcf7-cbff35e6d960/
+    - assets/images/portrait/f0c4f30d-624d-4387-b9e0-8ad49e13c308/
+    - assets/images/portrait/f534a3e4-c281-457f-a5dc-fe915823beb1/
+    - assets/images/portrait/fa77d243-1be5-4238-9d63-fab2c06bc553/
+    - assets/google_signin_dark.png

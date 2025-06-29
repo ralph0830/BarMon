@@ -8,6 +8,16 @@ alwaysApply: false
 ## 1. 폴더 구조 및 파일명
 - 모든 바몬 이미지는 고유 ID 기반으로 관리한다.
 - 경로: `assets/images/portrait/{id}/`
+# Barcodian 바몬 이미지 저장 및 폴더 구조 규칙
+
+## 1. 폴더 구조 및 파일명
+- 모든 바몬 이미지는 고유 ID 기반으로 관리한다.
+- 경로: `assets/images/portrait/{id}/`
+# Barcodian 바몬 이미지 저장 및 폴더 구조 규칙
+
+## 1. 폴더 구조 및 파일명
+- 모든 바몬 이미지는 고유 ID 기반으로 관리한다.
+- 경로: `assets/images/portrait/{id}/`
   - 예시: `assets/images/portrait/1/portrait.png`
 - 각 바몬 폴더에는 다음과 같은 서브 이미지 파일을 저장한다:
   - `portrait.png` : 기본 프로필/카드용 이미지
@@ -48,4 +58,43 @@ alwaysApply: false
 ## 5. 기타
 - 모든 신규 바몬/이미지 추가 시 동일 규칙을 반드시 준수한다.
 - 기존 이미지 리네임/이동/경로 변경도 이 규칙에 따라 일괄 처리한다.
+
+## assets 자동화 스크립트 관리
+- assets/images/portrait/ 등 하위 폴더가 많을 경우, pubspec.yaml의 assets 항목을 자동 생성하는 스크립트를 사용한다.
+- 스크립트는 scripts/generate_assets_yaml.dart 에 위치한다.
+- pubspec.yaml 수정 시, scripts/generate_assets_yaml.dart 를 실행하여 assets 항목을 갱신한다.
+- 스크립트 실행 예시: dart scripts/generate_assets_yaml.dart > assets_list.txt
+- 결과를 pubspec.yaml에 복사/반영한다.
+
+## Flutter 색상 투명도 적용 규칙
+- Colors.withOpacity()는 deprecated 되었으므로, 투명도 적용 시 반드시 withAlpha(int) 사용
+- 예시: Colors.black.withAlpha(153) // 0.6 투명도 적용
+
+# 인증 시스템 운영 원칙
+
+- 인증 시스템은 Supabase Auth(외부 서비스) 기반으로 통합 운영한다.
+- 마스터 DB, 계정별 데이터, 인증/권한 관리는 Supabase Auth 및 Starbase 서버에서 직접 처리한다.
+- Clerk 등 외부 인증 서비스는 사용하지 않는다.
+- 이 규칙을 프로젝트 전역에 적용한다.
+
+# Supabase 연동 및 Flutter-DB 보안 규칙 (2024-07)
+- Flutter 앱은 Supabase Client(SDK)로 직접 DB에 접근한다.
+- 반드시 Supabase의 RLS(Row Level Security) 정책을 활성화하고, 각 테이블에 '본인 데이터만 접근/수정/삭제' 정책을 추가한다.
+- Drizzle ORM은 Next.js/운영툴(서버)에서만 사용하며, Flutter에서는 사용하지 않는다.
+- 운영툴/관리자 권한은 별도 정책(SQL)으로 분리 관리한다.
+
+## CRUD 프론트엔드 구현 정책
+- 일반 사용자(플레이어)용 CRUD(생성/조회/수정/삭제)는 **Flutter 앱**에서 구현한다.
+- 운영자/관리자용 CRUD(마스터 바몬, 유저 바몬, 유저 관리 등)는 **Next.js 기반 Admin(운영툴)**에서 구현한다.
+- 각 프론트엔드는 Supabase와 직접 연동하여 실시간 데이터 동기화 및 인증(RLS 정책 등)을 준수한다.
+- (예시) 플레이어: Flutter 앱에서 바몬 소환/리스트/수정/삭제, 관리자: Next.js Admin에서 마스터/유저 바몬 관리 등.
+
+## Flutter 라우팅 및 네비게이션 규칙
+- MaterialApp의 라우트 생성 우선순위:
+  1. '/'(슬래시) route는 home 프로퍼티가 있으면 home이 우선 사용됨.
+  2. home이 없으면 routes 테이블에서 해당 경로를 찾음.
+  3. routes에 없으면 onGenerateRoute가 호출됨.
+  4. onGenerateRoute도 없으면 onUnknownRoute가 호출됨.
+- pushReplacementNamed, pushNamed 등으로 이동할 때는 반드시 routes에 등록된 경로(예: '/barmon', '/login')로 이동해야 하며, '/'(슬래시)로 이동하려면 home 또는 routes['/']가 반드시 정의되어 있어야 함.
+- 라우트 오류(예: "Could not find a generator for route ...")가 발생하면, routes 테이블 또는 home, onGenerateRoute, onUnknownRoute 설정을 반드시 점검할 것.
 

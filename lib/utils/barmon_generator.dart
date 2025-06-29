@@ -55,8 +55,6 @@ BarMon generateBarMon({
   final speed = 20 + hex(seed.substring(14, 16)) % 81; // 20~100
   const level = 1;
   const exp = 0;
-  // 이미지(임시: 종족+속성 조합으로 결정, 실제는 서버/DB 연동)
-  final imageUrl = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${speciesIdx + 1}.png';
   // id는 seed 앞 12자리
   final id = seed.substring(0, 12);
   // 이름(임시: 종족+속성)
@@ -66,7 +64,6 @@ BarMon generateBarMon({
     name: name,
     engName: name, // 임시: 영문명은 name과 동일하게
     types: types,
-    imageUrl: imageUrl,
     level: level,
     exp: exp,
     attack: attack,

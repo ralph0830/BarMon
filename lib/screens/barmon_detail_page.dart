@@ -145,22 +145,22 @@ class _BarMonDetailPageState extends State<BarMonDetailPage> with SingleTickerPr
     final isSSR = barMon.rarity == BarMonRarity.legendary;
     return Center(
       child: FractionallySizedBox(
-        widthFactor: 1.0,
-        heightFactor: 0.9,
-          child: Stack(
-            children: [
+        widthFactor: 0.8,
+        heightFactor: 0.8,
+        child: Stack(
+          children: [
             // 프레임 전체 배경
             _CardFrameBackground(isSSR: isSSR, color: typeColor),
             // 내용(이미지, 능력치, 오버레이)
-              Padding(
+            Padding(
               padding: const EdgeInsets.fromLTRB(5, 56, 5, 80),
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
                     // 이미지 + 오버레이
-                      Stack(
-                        children: [
+                    Stack(
+                      children: [
                         GestureDetector(
                           onTapDown: (_) => setState(() => _hideInfoOverlay = true),
                           onTapUp: (_) => setState(() => _hideInfoOverlay = false),
@@ -172,10 +172,18 @@ class _BarMonDetailPageState extends State<BarMonDetailPage> with SingleTickerPr
                             child: Hero(
                               tag: 'barmon_${barMon.id}',
                               child: Image.asset(
-                                barMon.imageUrl,
+                                barMon.fullImageUrl,
                                 width: 320,
                                 height: 320,
                                 fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Image.asset(
+                                    'assets/images/noimage.png',
+                                    width: 320,
+                                    height: 320,
+                                    fit: BoxFit.cover,
+                                  );
+                                },
                               ),
                             ),
                           ),
@@ -201,12 +209,22 @@ class _BarMonDetailPageState extends State<BarMonDetailPage> with SingleTickerPr
                               ),
                             ),
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      // 능력치 표
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    // 능력치 표
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: HSLColor.lerp(
+                            HSLColor.fromColor(getTypeColor(barMon.types.first)),
+                            HSLColor.fromColor(Colors.white),
+                            0.5,
+                          )!.toColor(),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        padding: const EdgeInsets.all(12),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -235,10 +253,11 @@ class _BarMonDetailPageState extends State<BarMonDetailPage> with SingleTickerPr
                           ],
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
+            ),
             // 상단바 텍스트/희귀도 Overlay
             Positioned(
               top: 0, left: 0, right: 0,
@@ -247,17 +266,17 @@ class _BarMonDetailPageState extends State<BarMonDetailPage> with SingleTickerPr
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
+                  children: [
                     Text(
                       barMon.name,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 24,
-                letterSpacing: 1.2,
-                fontFamily: 'GmarketSansTTFBold',
-              ),
-            ),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 24,
+                        letterSpacing: 1.2,
+                        fontFamily: 'GmarketSansTTFBold',
+                      ),
+                    ),
                     _RarityBadge(rarity: barMon.rarity),
                   ],
                 ),
@@ -267,35 +286,35 @@ class _BarMonDetailPageState extends State<BarMonDetailPage> with SingleTickerPr
             Positioned(
               left: 0, right: 0, bottom: 0,
               child: ClipPath(
-      clipper: _BannerClipper(),
-      child: Container(
-        height: 80,
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                clipper: _BannerClipper(),
+                child: Container(
+                  height: 80,
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                   color: Colors.transparent,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
                           Text(barMon.species, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
-                Row(
-                  children: List.generate(6, (i) => Icon(
+                          Row(
+                            children: List.generate(6, (i) => Icon(
                               i < _getStarGrade(barMon) ? Icons.star : Icons.star_border,
-                    color: Colors.amber,
-                    size: 18,
-                  )),
-                ),
-                const SizedBox(height: 2),
+                              color: Colors.amber,
+                              size: 18,
+                            )),
+                          ),
+                          const SizedBox(height: 2),
                           const Text('이 바몬에 대한 설명이 없습니다.', style: TextStyle(color: Colors.white, fontSize: 12)),
-              ],
-            ),
-            const Spacer(),
-            Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: Text(
+                        ],
+                      ),
+                      const Spacer(),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Text(
                           getAttributeEmoji(barMon.attribute),
-                style: const TextStyle(fontSize: 32),
+                          style: const TextStyle(fontSize: 32),
                         ),
                       ),
                     ],
@@ -640,7 +659,7 @@ class _BarMonDetailSwiperState extends State<BarMonDetailSwiper> {
   @override
   void initState() {
     super.initState();
-    _controller = PageController(initialPage: widget.initialIndex, viewportFraction: 0.85);
+    _controller = PageController(initialPage: widget.initialIndex);
   }
 
   @override
@@ -649,22 +668,7 @@ class _BarMonDetailSwiperState extends State<BarMonDetailSwiper> {
       controller: _controller,
       itemCount: widget.barMons.length,
       itemBuilder: (context, index) {
-        return AnimatedBuilder(
-          animation: _controller,
-          builder: (context, child) {
-            double value = 1.0;
-            if (_controller.position.haveDimensions) {
-              value = ((_controller.page ?? _controller.initialPage) - index).toDouble();
-              value = (1 - (value.abs() * 0.15)).clamp(0.85, 1.0).toDouble();
-            }
-            return Center(
-              child: Transform.scale(
-                scale: value,
-                child: BarMonDetailPage(barMon: widget.barMons[index]),
-              ),
-            );
-          },
-        );
+        return BarMonDetailPage(barMon: widget.barMons[index]);
       },
     );
   }
