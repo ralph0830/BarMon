@@ -98,3 +98,48 @@ alwaysApply: false
 - pushReplacementNamed, pushNamed 등으로 이동할 때는 반드시 routes에 등록된 경로(예: '/barmon', '/login')로 이동해야 하며, '/'(슬래시)로 이동하려면 home 또는 routes['/']가 반드시 정의되어 있어야 함.
 - 라우트 오류(예: "Could not find a generator for route ...")가 발생하면, routes 테이블 또는 home, onGenerateRoute, onUnknownRoute 설정을 반드시 점검할 것.
 
+## Flutter/Dart: async gap 이후 BuildContext 사용 규칙 (use_build_context_synchronously)
+
+- 모든 async/await 이후 BuildContext(Navigator, ScaffoldMessenger 등) 사용 시 반드시 아래 패턴을 적용한다.
+- showDialog, StatefulBuilder 등 builder에서 전달받은 context(builderContext)는 async gap 이후에도 안전하게 사용할 수 있으나, 반드시 다음과 같이 사용한다.
+
+```dart
+if (builderContext.mounted) {
+  Navigator.of(builderContext).pop();
+  ScaffoldMessenger.of(builderContext).showSnackBar(...);
+}
+```
+- setState는 State의 mounted로 체크한다.
+- State의 context 사용은 if (!mounted) return; 패턴을 사용한다.
+- 이 규칙을 지키지 않으면 use_build_context_synchronously linter 경고가 발생하며, Flutter 공식 권장 패턴에 따라 반드시 준수한다.
+
+# Barcodian Flutter 프로젝트: 인증/로그인/빌드/코드 품질 공식 규칙
+
+## 1. Supabase Auth/구글 로그인/비회원(GUEST) 모드
+- 인증은 Supabase Auth 기반으로 구현한다.
+- GUEST(비회원) 모드 지원: 로그인 없이 바몬 리스트/CRUD 사용 가능.
+- 구글 소셜 로그인(google_sign_in) 연동 시, idToken, accessToken, user 정보 등 logger로 단계별 디버깅 로그를 남긴다.
+- 구글 로그인 성공 시, Supabase Auth로 바로 연동한다. (admin.listUsers 등 Admin API는 클라이언트에서 사용 불가)
+- 동일 이메일 계정 병합/분리 UX는 Flutter 앱에서 직접 구현하지 않으며, 서버(Edge Function 등)에서만 가능함을 명확히 안내한다.
+
+## 2. pubspec.yaml/asset 자동화
+- asset 경로, 폰트, 이미지 등 pubspec.yaml에 자동 반영한다.
+- 빌드 오류 발생 시, 경로/권한/설정 자동 점검 및 안내.
+
+## 3. Flutter/Dart linter 및 코드 품질
+- use_build_context_synchronously 경고: async gap 이후 builderContext.mounted 체크, setState는 State의 mounted로 체크, 모든 context 기반 UI 호출은 builderContext로 통일한다.
+- print 대신 logger 패키지 사용, pub add/logger, pub get 자동화.
+- 위 규칙을 프로젝트 전역에 적용한다.
+
+## 4. 실행/자동화 관리
+- flutter run 등 장시간 실행 명령은 한 번에 한 프로세스만 실행한다.
+- 실행 주체(사용자/AI) 명확히 구분, 실행 로그 공유.
+- pubspec.yaml, assets, 권한 등 Flutter 환경 세팅은 항상 최신 상태로 유지한다.
+
+## 5. Supabase Admin API 사용 제한
+- Supabase Auth Admin API(listUsers 등)는 서버(Edge Function 등)에서만 사용 가능, 클라이언트에서는 403 not_admin 오류 발생.
+- 클라이언트에서는 admin.listUsers, linkIdentity, unlinkIdentity 등 Admin API 호출 금지.
+
+## 6. 기타
+- 모든 규칙, 자동화 내역, linter 패턴, Flutter/Supabase 연동법 등은 @project-rules.mdc에 최신화한다.
+

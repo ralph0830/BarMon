@@ -10,6 +10,8 @@
 - [x] 6) 권한/보안/감사 로그 (관리자 인증/권한 체크, 변경 내역 로깅)
 - [x] Flutter 클라이언트 상세페이지 UI/UX 개선(스와이프, 이미지 전환, 능력치 배경색 등) 완료
 - [x] 바몬 상세페이지: 리스트-상세 이미지 분리, 스와이프 전환, 능력치 배경색 속성색-흰색 중간값 적용 등 실사용 수준 UI 개선
+- [x] Flutter 클라이언트 구글 소셜 로그인 연동 및 자동화 (pubspec.yaml 에셋 경로 자동 수정, 빌드 오류 자동화, Provider 관련 코드 자동 수정 등)
+- [x] pubspec.yaml 에셋 경로 자동화 및 flutter pub get, flutter run 등 명령 자동 실행, 빌드 오류 자동 수정
 - [ ] 7) 스타일/UX 개선 (반응형, 다크모드, 접근성 등)
 - [ ] 8) 빌드/배포 (npm run build 후 /var/www/html/barmon 등으로 배포)
 - [x] Supabase 테이블(user_barmon, barmon 등) 생성 및 RLS(본인만 접근/수정/삭제) 정책 적용
@@ -34,7 +36,15 @@
 - ✅ Flutter → Supabase Client → DB 구조로 전환, Drizzle ORM은 서버/운영툴에서만 사용
 - ✅ Supabase Flutter SDK 연동 및 인증/CRUD 구현
 - ✅ GUEST(비회원) 모드 및 CRUD MVP 자동화 적용
+- ✅ Flutter 클라이언트 구글 소셜 로그인 연동, Provider 관련 코드 자동화, pubspec.yaml 에셋 경로 자동화, 빌드 오류 자동 수정 등 모든 자동화 원칙 적용
 - ⏭️ 다음 단계: Flutter-API-DB 연동 고도화, 운영툴 대시보드/CRUD/보안 강화, 실운영 배포 등
+
+---
+
+## 자동화 원칙 및 역할 분담
+- AI(Assistant)는 코드 수정, 설정 변경, pubspec.yaml/에셋 경로/명령 실행 등 자동화 가능한 모든 작업을 직접 처리
+- 사용자는 외부 콘솔 입력, OAuth Client 발급, Supabase 콘솔 설정 등 자동화 불가한 작업만 직접 수행
+- 모든 자동화 내역 및 수동 작업 요청은 task.md 및 대화에 명확히 기록
 
 ---
 
@@ -120,3 +130,31 @@ classDef local fill:#e0f7fa,stroke:#00796b,stroke-width:2;
 - Mermaid 다이어그램, 운영툴 문서화
 - Flutter → Supabase Client → DB 구조로 전환, Drizzle ORM은 서버/운영툴에서만 사용
 - Supabase Flutter SDK 연동 및 인증/CRUD 구현 
+
+## 2024-06-28 Flutter 클라이언트 인증/회원가입/UX/자동화 작업 내역
+
+### 1. 인증/로그인/회원가입/게스트/구글 로그인 전체 UX 및 코드 구조
+- 로그인 페이지에서 이메일/비밀번호 입력 후 로그인 또는 회원가입 버튼으로 각각 동작 분기
+- 회원가입 버튼 클릭 시 별도 다이얼로그(모달)에서 이메일(ID), 비밀번호, 비밀번호 확인, 구글 로그인 버튼 입력/선택 가능
+- 입력값 검증(이메일 형식, 비밀번호 일치/길이 등) 및 에러 안내, 가입 성공 시 자동 로그인
+- GUEST(비회원) 모드 지원: 드로어 메뉴에서 GUEST 오른쪽에 회원가입 버튼 노출, 클릭 시 로그인/회원가입 화면으로 이동
+- 구글 소셜 로그인: 로그인/회원가입 다이얼로그 모두에서 구글 로그인 버튼 제공, 성공 시 바로 바몬 리스트로 이동
+
+### 2. 드로어(햄버거) 메뉴 UX 개선
+- 로그인 계정 정보(이메일/구글 아이콘/GUEST) 맨 위에 표시
+- 구글 계정 로그인 시 이메일 오른쪽에 구글 아이콘 노출
+- GUEST 모드 시 회원가입 버튼 노출
+- 구글 계정 분리(연결 해제) 버튼 추가, provider unlink 동작(계정 분할 아님)
+
+### 3. Supabase Auth provider unlink(구글 계정 분리) 동작 및 한계
+- unlinkIdentity는 provider 연결만 해제, user row 자체 분할(2개 계정 분리)은 불가
+- 실제 계정 분할은 서버(Edge Function, Admin API)에서 별도 구현 필요
+
+### 4. 코드 품질 및 자동화
+- use_build_context_synchronously linter 경고 해결: builderContext.mounted, context 분리 사용
+- pubspec.yaml, asset 경로, provider, 빌드 오류 등 자동화 원칙 적용
+- @project-rules.mdc에 모든 Flutter/Supabase 연동, linter, 자동화 규칙 최신화
+
+### 5. 기타/운영툴 연동
+- task.md 및 대화에 모든 자동화/수동 작업 내역 명확히 기록
+- 운영툴(Next.js, Drizzle, Starbase)과 연동되는 구조/정책 유지 

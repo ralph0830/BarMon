@@ -5,6 +5,7 @@ import 'screens/login_page.dart';
 import 'screens/barmon_list_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/services.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,25 +13,45 @@ Future<void> main() async {
     url: 'https://bqjefeprwlhrhrqqqutd.supabase.co',
     anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJxamVmZXByd2xocmhycXFxdXRkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExMjA0MzMsImV4cCI6MjA2NjY5NjQzM30.z0TYKWWMQpuhZZ7tfXinPnW3Ez-dqbT3k-IApXQSPA8',
   );
+
   final prefs = await SharedPreferences.getInstance();
-  final user = Supabase.instance.client.auth.currentUser;
-  final guestId = prefs.getString('guest_id');
-  runApp(ProviderScope(child: MyApp(isLoggedIn: user != null, isGuest: guestId != null)));
+  final isGuest = prefs.getBool('is_guest') ?? false;
+  final session = Supabase.instance.client.auth.currentSession;
+
+  String initialRoute;
+  Map<String, dynamic>? initialArgs;
+  if (session != null) {
+    initialRoute = '/main';
+    initialArgs = null;
+  } else if (isGuest) {
+    initialRoute = '/main';
+    initialArgs = {'guest': true};
+  } else {
+    initialRoute = '/login';
+    initialArgs = null;
+  }
+
+  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  runApp(ProviderScope(child: MyApp(
+    initialRoute: initialRoute,
+    initialArgs: initialArgs,
+  )));
 }
 
 class MyApp extends StatelessWidget {
-  final bool isLoggedIn;
-  final bool isGuest;
-  const MyApp({required this.isLoggedIn, required this.isGuest, super.key});
+  final String initialRoute;
+  final Map<String, dynamic>? initialArgs;
+  const MyApp({required this.initialRoute, required this.initialArgs, super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Barcodian',
-      initialRoute: (isLoggedIn || isGuest) ? '/barmon' : '/login',
+      initialRoute: initialRoute,
       routes: {
         '/login': (context) => const LoginPage(),
         '/barmon': (context) => const BarmonListPage(),
+        '/main': (context) => const BarmonListPage(),
       },
       debugShowCheckedModeBanner: false,
     );

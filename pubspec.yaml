@@ -21,6 +21,7 @@ dependencies:
   google_sign_in: ^6.1.0
 
   cupertino_icons: ^1.0.2
+  logger: ^2.6.0
 
 dev_dependencies:
   flutter_test:
@@ -51,4 +52,4 @@ flutter:
     - assets/images/portrait/f0c4f30d-624d-4387-b9e0-8ad49e13c308/
     - assets/images/portrait/f534a3e4-c281-457f-a5dc-fe915823beb1/
     - assets/images/portrait/fa77d243-1be5-4238-9d63-fab2c06bc553/
-    - assets/google_signin_dark.png
+    - assets/images/google_signin_dark.png

@@ -429,6 +429,10 @@ class BarMonListNotifier extends StateNotifier<List<BarMon>> {
     ),
   ];
 
+  static List<String> get masterBarmonIds => _initialBarMons.map((b) => b.id).toList();
+
+  static List<BarMon> get masterBarmonList => _initialBarMons;
+
   void addBarMonFromScan({
     required String barcode,
     required String accountId,
